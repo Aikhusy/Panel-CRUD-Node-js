@@ -51,7 +51,7 @@
         "topic": "topic",
         "topicType": "msg",
         "splitLayout": "",
-        "x": 270,
+        "x": 190,
         "y": 320,
         "wires": [
             [
@@ -71,7 +71,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 510,
+        "x": 450,
         "y": 320,
         "wires": [
             [
@@ -92,8 +92,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 900,
-        "y": 460,
+        "x": 920,
+        "y": 420,
         "wires": []
     },
     {
@@ -108,7 +108,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 720,
+        "x": 660,
         "y": 320,
         "wires": [
             [
@@ -182,7 +182,7 @@
         "y": 200,
         "wires": [
             [
-                "bac9d0258aa4c75b"
+                "1481c87136d9e6f6"
             ]
         ]
     },
@@ -242,12 +242,12 @@
         "id": "1481c87136d9e6f6",
         "type": "MSSQL",
         "z": "ec120fa2edfe719f",
-        "mssqlCN": "dc15f63ca5d45c3a",
-        "name": "",
+        "mssqlCN": "4a627f09ccdae4bf",
+        "name": "Test",
         "outField": "payload",
         "returnType": 0,
         "throwErrors": 1,
-        "query": "",
+        "query": "INSERT INTO tbl_m_firewall (fw_name, fw_location, fw_site) VALUES ({{payload.name}}, {{payload.location}}, {{payload.site}});\r\n",
         "modeOpt": "queryMode",
         "modeOptType": "query",
         "queryOpt": "payload",
@@ -258,8 +258,8 @@
         "rowsType": "msg",
         "parseMustache": true,
         "params": [],
-        "x": 760,
-        "y": 520,
+        "x": 890,
+        "y": 200,
         "wires": [
             []
         ]
@@ -285,15 +285,15 @@
         "collapse": false
     },
     {
-        "id": "dc15f63ca5d45c3a",
+        "id": "4a627f09ccdae4bf",
         "type": "MSSQL-CN",
         "tdsVersion": "7_4",
-        "name": "",
-        "server": "",
+        "name": "CP_FW_DEVEL",
+        "server": "DESKTOP-E5QF6IJ",
         "port": "1433",
         "encyption": true,
         "trustServerCertificate": true,
-        "database": "",
+        "database": "DBO_CHECKPOINT_FIREWALL",
         "useUTC": true,
         "connectTimeout": "15000",
         "requestTimeout": "15000",
