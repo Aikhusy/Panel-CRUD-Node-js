@@ -1,0 +1,314 @@
+[
+    {
+        "id": "c1b13fb30c829ab7",
+        "type": "ui_form",
+        "z": "ec120fa2edfe719f",
+        "name": "Firewall Login Info",
+        "label": "Firewall Login Info",
+        "group": "5f0b10fec7464c32",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "options": [
+            {
+                "label": "firewall name",
+                "value": "name",
+                "type": "checkbox",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "IP Address",
+                "value": "ip_address",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "password",
+                "type": "password",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Expert Password",
+                "value": "expert_password",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "name": false,
+            "ip_address": "",
+            "password": "",
+            "expert_password": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "x": 270,
+        "y": 320,
+        "wires": [
+            [
+                "e1064f4564d24adc"
+            ]
+        ]
+    },
+    {
+        "id": "e1064f4564d24adc",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "Function Check Ip",
+        "func": "let ip = msg.payload['ip_address'];\n\n// Regex pattern untuk validasi IPv4\nconst ipv4Pattern = /^(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$/;\n\n// Memeriksa apakah IP valid\nlet isValid = ipv4Pattern.test(ip);\n\n// Menambahkan hasil validasi ke payload\nmsg.payload['isvalid'] = isValid;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 320,
+        "wires": [
+            [
+                "97547dedf9e3ca2a"
+            ]
+        ]
+    },
+    {
+        "id": "9b87dccdff0993c0",
+        "type": "debug",
+        "z": "ec120fa2edfe719f",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "97547dedf9e3ca2a",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 1",
+        "func": "if (!msg.payload[\"isvalid\"]){\n    return msg.bijji = 0;\n}\n\nconst crypto = global.get(\"crypto\");\n\nconst passphrase = \"k*2ja6g3n1\";\n\nfunction deriveKey(passphrase, salt) {\n    return crypto.pbkdf2Sync(passphrase, salt, 16384, 32, 'sha256');\n}\n\nfunction encryptPassword(plainPassword) {\n    const salt = crypto.randomBytes(16); // 16 bytes for salt\n    const nonce = crypto.randomBytes(12); // 12 bytes for AES-GCM nonce\n    const key = deriveKey(passphrase, salt);\n\n    const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);\n    const ciphertext = Buffer.concat([cipher.update(plainPassword, 'utf8'), cipher.final()]);\n    const tag = cipher.getAuthTag(); // 16 bytes for authentication tag\n\n    // Combine nonce, salt, tag, and ciphertext\n    const encryptedData = Buffer.concat([nonce, salt, tag, ciphertext]);\n\n    return encryptedData.toString('base64'); // Encode as Base64 for storage/transmission\n}\n\n// Example usage in Node-RED\nconst expertPassword = msg.payload['expert_password'];\nconst password = msg.payload['password'];\n// Assuming msg.payload contains the password to encrypt\nmsg.payload['expert_password'] = encryptPassword(expertPassword);\nmsg.payload['password'] = encryptPassword(password);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 320,
+        "wires": [
+            [
+                "bac9d0258aa4c75b",
+                "9b87dccdff0993c0"
+            ]
+        ]
+    },
+    {
+        "id": "bac9d0258aa4c75b",
+        "type": "debug",
+        "z": "ec120fa2edfe719f",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a2ec40f127faef11",
+        "type": "ui_form",
+        "z": "ec120fa2edfe719f",
+        "name": "Firewall Data Info",
+        "label": "Firewall Data Info",
+        "group": "ce0b45e54974f03f",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "options": [
+            {
+                "label": "firewall name",
+                "value": "name",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "firewall Location",
+                "value": "location",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "firewall Site",
+                "value": "site",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "name": "",
+            "location": "",
+            "site": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "x": 630,
+        "y": 200,
+        "wires": [
+            [
+                "bac9d0258aa4c75b"
+            ]
+        ]
+    },
+    {
+        "id": "52eb6b6c8e022e1f",
+        "type": "ui_dropdown",
+        "z": "ec120fa2edfe719f",
+        "name": "",
+        "label": "",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "ce0b45e54974f03f",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "multiple": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 420,
+        "y": 200,
+        "wires": [
+            [
+                "a2ec40f127faef11"
+            ]
+        ]
+    },
+    {
+        "id": "ac1c8e8c36a9a85e",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 2",
+        "func": "msg.options = [\"Choice 1\", \"Choice 2\", \"Choice 3\"]\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 200,
+        "wires": [
+            [
+                "52eb6b6c8e022e1f"
+            ]
+        ]
+    },
+    {
+        "id": "1481c87136d9e6f6",
+        "type": "MSSQL",
+        "z": "ec120fa2edfe719f",
+        "mssqlCN": "dc15f63ca5d45c3a",
+        "name": "",
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "",
+        "modeOpt": "queryMode",
+        "modeOptType": "query",
+        "queryOpt": "payload",
+        "queryOptType": "editor",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "parseMustache": true,
+        "params": [],
+        "x": 760,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5f0b10fec7464c32",
+        "type": "ui_group",
+        "name": "Layer2",
+        "tab": "f53f48ec431449a3",
+        "order": 2,
+        "disp": true,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "ce0b45e54974f03f",
+        "type": "ui_group",
+        "name": "Layer1",
+        "tab": "f53f48ec431449a3",
+        "order": 1,
+        "disp": true,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "dc15f63ca5d45c3a",
+        "type": "MSSQL-CN",
+        "tdsVersion": "7_4",
+        "name": "",
+        "server": "",
+        "port": "1433",
+        "encyption": true,
+        "trustServerCertificate": true,
+        "database": "",
+        "useUTC": true,
+        "connectTimeout": "15000",
+        "requestTimeout": "15000",
+        "cancelTimeout": "5000",
+        "pool": "5",
+        "parseJSON": false,
+        "enableArithAbort": true,
+        "readOnlyIntent": false
+    },
+    {
+        "id": "f53f48ec431449a3",
+        "type": "ui_tab",
+        "name": "cpfwinput",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
