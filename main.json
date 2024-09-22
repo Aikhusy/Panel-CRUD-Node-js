@@ -1,13 +1,5 @@
 [
     {
-        "id": "ec120fa2edfe719f",
-        "type": "tab",
-        "label": "Flow 1",
-        "disabled": false,
-        "info": "",
-        "env": []
-    },
-    {
         "id": "c1b13fb30c829ab7",
         "type": "ui_form",
         "z": "ec120fa2edfe719f",
@@ -59,11 +51,12 @@
         "topic": "topic",
         "topicType": "msg",
         "splitLayout": "",
-        "x": 230,
-        "y": 340,
+        "x": 590,
+        "y": 460,
         "wires": [
             [
-                "e1064f4564d24adc"
+                "e1064f4564d24adc",
+                "52eb6b6c8e022e1f"
             ]
         ]
     },
@@ -79,8 +72,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
-        "y": 340,
+        "x": 870,
+        "y": 460,
         "wires": [
             [
                 "97547dedf9e3ca2a"
@@ -100,7 +93,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1020,
+        "x": 1900,
         "y": 440,
         "wires": []
     },
@@ -116,12 +109,11 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 760,
-        "y": 340,
+        "x": 1100,
+        "y": 460,
         "wires": [
             [
-                "bac9d0258aa4c75b",
-                "9b87dccdff0993c0"
+                "7d1b16272defda09"
             ]
         ]
     },
@@ -138,7 +130,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1010,
+        "x": 1890,
         "y": 340,
         "wires": []
     },
@@ -186,8 +178,8 @@
         "topic": "topic",
         "topicType": "msg",
         "splitLayout": "",
-        "x": 230,
-        "y": 240,
+        "x": 310,
+        "y": 320,
         "wires": [
             [
                 "1481c87136d9e6f6"
@@ -198,15 +190,15 @@
         "id": "52eb6b6c8e022e1f",
         "type": "ui_dropdown",
         "z": "ec120fa2edfe719f",
-        "name": "",
-        "label": "",
+        "name": "fk_fw_id",
+        "label": "fk_fw_id",
         "tooltip": "",
         "place": "Select option",
-        "group": "ce0b45e54974f03f",
+        "group": "5f0b10fec7464c32",
         "order": 1,
         "width": 0,
         "height": 0,
-        "passthru": false,
+        "passthru": true,
         "multiple": false,
         "options": [
             {
@@ -216,12 +208,14 @@
             }
         ],
         "payload": "",
-        "topic": "topic",
+        "topic": "fk_fw_id",
         "topicType": "msg",
-        "x": 1240,
-        "y": 240,
+        "x": 1180,
+        "y": 320,
         "wires": [
-            []
+            [
+                "35a8658622437fe0"
+            ]
         ]
     },
     {
@@ -229,7 +223,7 @@
         "type": "function",
         "z": "ec120fa2edfe719f",
         "name": "function 2",
-        "func": "msg.options = [\n    { \"label\": \"Option 1\", \"value\": 1 },\n    { \"label\": \"Option 2\", \"value\": 2 },\n    { \"label\": \"Option 3\", \"value\": 3 }\n];\nreturn msg;\n",
+        "func": "const inputs = msg.payload;\nlet bijji = [];\n\ninputs.forEach(input => {\n    let obj = {};\n    obj[input.fw_name] = input.id;  // Use input.fw_name as the key and input.id as the value\n    bijji.push(obj);\n});\n\nmsg.options = bijji;\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -249,11 +243,11 @@
         "type": "MSSQL",
         "z": "ec120fa2edfe719f",
         "mssqlCN": "4a627f09ccdae4bf",
-        "name": "Test",
+        "name": "",
         "outField": "payload",
         "returnType": 0,
         "throwErrors": 1,
-        "query": "INSERT INTO tbl_m_firewall (fw_name, fw_location, fw_site) VALUES ({{payload.name}}, {{payload.location}}, {{payload.site}});\r\n",
+        "query": "INSERT INTO tbl_m_firewall (fw_name, fw_location, fw_site) \r\nVALUES ('{{payload.name}}', '{{payload.location}}', '{{payload.site}}');\r\n",
         "modeOpt": "queryMode",
         "modeOptType": "query",
         "queryOpt": "payload",
@@ -264,36 +258,11 @@
         "rowsType": "msg",
         "parseMustache": true,
         "params": [],
-        "x": 450,
-        "y": 240,
+        "x": 520,
+        "y": 320,
         "wires": [
             [
-                "cc9ad39275c04e08"
-            ]
-        ]
-    },
-    {
-        "id": "cc9ad39275c04e08",
-        "type": "trigger",
-        "z": "ec120fa2edfe719f",
-        "name": "",
-        "op1": "1",
-        "op2": "0",
-        "op1type": "val",
-        "op2type": "val",
-        "duration": "250",
-        "extend": "false",
-        "overrideDelay": "false",
-        "units": "ms",
-        "reset": "",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 620,
-        "y": 240,
-        "wires": [
-            [
-                "834d8fe49592836b"
+                "2b9baf9a77f12578"
             ]
         ]
     },
@@ -302,11 +271,11 @@
         "type": "MSSQL",
         "z": "ec120fa2edfe719f",
         "mssqlCN": "4a627f09ccdae4bf",
-        "name": "",
+        "name": "Get Fw Name for drop down",
         "outField": "payload",
         "returnType": 0,
         "throwErrors": 1,
-        "query": "",
+        "query": "select id,fw_name from tbl_m_firewall where deleted_at is null;",
         "modeOpt": "queryMode",
         "modeOptType": "query",
         "queryOpt": "payload",
@@ -317,7 +286,7 @@
         "rowsType": "msg",
         "parseMustache": true,
         "params": [],
-        "x": 860,
+        "x": 840,
         "y": 240,
         "wires": [
             [
@@ -355,24 +324,117 @@
         ]
     },
     {
-        "id": "759a22d88c2fba68",
-        "type": "ui_spacer",
+        "id": "4f8f6076aa2d7173",
+        "type": "debug",
         "z": "ec120fa2edfe719f",
-        "name": "spacer",
-        "group": "5f0b10fec7464c32",
-        "order": 1,
-        "width": 1,
-        "height": 1
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "options",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1250,
+        "y": 160,
+        "wires": []
     },
     {
-        "id": "3fe764f07780ea8d",
-        "type": "ui_spacer",
+        "id": "523cc9ae65ba584b",
+        "type": "debug",
         "z": "ec120fa2edfe719f",
-        "name": "spacer",
-        "group": "ce0b45e54974f03f",
-        "order": 1,
-        "width": 1,
-        "height": 1
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1660,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "aa820c7df09b9209",
+        "type": "delay",
+        "z": "ec120fa2edfe719f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 790,
+        "y": 320,
+        "wires": [
+            [
+                "834d8fe49592836b"
+            ]
+        ]
+    },
+    {
+        "id": "2b9baf9a77f12578",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 3",
+        "func": "msg.payload=[];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 240,
+        "wires": [
+            [
+                "834d8fe49592836b"
+            ]
+        ]
+    },
+    {
+        "id": "35a8658622437fe0",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 4",
+        "func": "let temp = msg.payload\nmsg.payload=[]\n\nmsg.payload[\"id\"]=temp\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1340,
+        "y": 380,
+        "wires": [
+            [
+                "7d1b16272defda09"
+            ]
+        ]
+    },
+    {
+        "id": "7d1b16272defda09",
+        "type": "merge",
+        "z": "ec120fa2edfe719f",
+        "name": "",
+        "timeout": "4",
+        "x": 1490,
+        "y": 440,
+        "wires": [
+            [
+                "523cc9ae65ba584b"
+            ]
+        ]
     },
     {
         "id": "5f0b10fec7464c32",
