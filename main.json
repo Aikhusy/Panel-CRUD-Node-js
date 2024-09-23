@@ -11,15 +11,15 @@
         "height": "0",
         "options": [
             {
-                "label": "firewall name",
-                "value": "name",
-                "type": "checkbox",
+                "label": "IP Address",
+                "value": "ip_address",
+                "type": "text",
                 "required": true,
                 "rows": null
             },
             {
-                "label": "IP Address",
-                "value": "ip_address",
+                "label": "firewall name",
+                "value": "names",
                 "type": "text",
                 "required": true,
                 "rows": null
@@ -40,8 +40,8 @@
             }
         ],
         "formValue": {
-            "name": false,
             "ip_address": "",
+            "names": "",
             "password": "",
             "expert_password": ""
         },
@@ -51,12 +51,11 @@
         "topic": "topic",
         "topicType": "msg",
         "splitLayout": "",
-        "x": 590,
+        "x": 550,
         "y": 460,
         "wires": [
             [
-                "e1064f4564d24adc",
-                "52eb6b6c8e022e1f"
+                "e1064f4564d24adc"
             ]
         ]
     },
@@ -89,12 +88,12 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "payload",
+        "complete": "payload[0]",
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1900,
-        "y": 440,
+        "x": 1640,
+        "y": 460,
         "wires": []
     },
     {
@@ -102,18 +101,18 @@
         "type": "function",
         "z": "ec120fa2edfe719f",
         "name": "Function Cryptograpy",
-        "func": "if (!msg.payload[\"isvalid\"]){\n    return msg.bijji = 0;\n}\n\nconst crypto = global.get(\"crypto\");\n\nconst passphrase = \"k*2ja6g3n1\";\n\nfunction deriveKey(passphrase, salt) {\n    return crypto.pbkdf2Sync(passphrase, salt, 16384, 32, 'sha256');\n}\n\nfunction encryptPassword(plainPassword) {\n    const salt = crypto.randomBytes(16); // 16 bytes for salt\n    const nonce = crypto.randomBytes(12); // 12 bytes for AES-GCM nonce\n    const key = deriveKey(passphrase, salt);\n\n    const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);\n    const ciphertext = Buffer.concat([cipher.update(plainPassword, 'utf8'), cipher.final()]);\n    const tag = cipher.getAuthTag(); // 16 bytes for authentication tag\n\n    // Combine nonce, salt, tag, and ciphertext\n    const encryptedData = Buffer.concat([nonce, salt, tag, ciphertext]);\n\n    return encryptedData.toString('base64'); // Encode as Base64 for storage/transmission\n}\n\n// Example usage in Node-RED\nconst expertPassword = msg.payload['expert_password'];\nconst password = msg.payload['password'];\n// Assuming msg.payload contains the password to encrypt\nmsg.payload['expert_password'] = encryptPassword(expertPassword);\nmsg.payload['password'] = encryptPassword(password);\nreturn msg;",
+        "func": "if (!msg.payload[\"isvalid\"]){\n    return msg.bijji = 0;\n}\n\ncontext.set(\"encrypted_passwords\", msg.payload);\n\nconst crypto = global.get(\"crypto\");\nmsg.topic=\"nol\"\nconst passphrase = \"k*2ja6g3n1\";\n\nfunction deriveKey(passphrase, salt) {\n    return crypto.pbkdf2Sync(passphrase, salt, 16384, 32, 'sha256');\n}\n\nfunction encryptPassword(plainPassword) {\n    const salt = crypto.randomBytes(16); // 16 bytes for salt\n    const nonce = crypto.randomBytes(12); // 12 bytes for AES-GCM nonce\n    const key = deriveKey(passphrase, salt);\n\n    const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);\n    const ciphertext = Buffer.concat([cipher.update(plainPassword, 'utf8'), cipher.final()]);\n    const tag = cipher.getAuthTag(); // 16 bytes for authentication tag\n\n    // Combine nonce, salt, tag, and ciphertext\n    const encryptedData = Buffer.concat([nonce, salt, tag, ciphertext]);\n\n    return encryptedData.toString('base64'); // Encode as Base64 for storage/transmission\n}\n\n// Example usage in Node-RED\nconst expertPassword = msg.payload['expert_password'];\nconst password = msg.payload['password'];\n// Assuming msg.payload contains the password to encrypt\nmsg.payload['expert_password'] = encryptPassword(expertPassword);\nmsg.payload['password'] = encryptPassword(password);\n\nmsg.parts = {\n    id: 1, // ID yang sama untuk semua pesan dalam satu set\n    index: 1,        // Urutan pertama\n    count: 2         // Total pesan yang diharapkan\n};\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1100,
+        "x": 1140,
         "y": 460,
         "wires": [
             [
-                "7d1b16272defda09"
+                "07fd91e02ff60351"
             ]
         ]
     },
@@ -130,8 +129,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1890,
-        "y": 340,
+        "x": 2230,
+        "y": 460,
         "wires": []
     },
     {
@@ -210,11 +209,11 @@
         "payload": "",
         "topic": "fk_fw_id",
         "topicType": "msg",
-        "x": 1180,
+        "x": 1100,
         "y": 320,
         "wires": [
             [
-                "35a8658622437fe0"
+                "11543a6680373876"
             ]
         ]
     },
@@ -295,69 +294,6 @@
         ]
     },
     {
-        "id": "a8a0b64da63c967d",
-        "type": "inject",
-        "z": "ec120fa2edfe719f",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 630,
-        "y": 140,
-        "wires": [
-            [
-                "834d8fe49592836b"
-            ]
-        ]
-    },
-    {
-        "id": "4f8f6076aa2d7173",
-        "type": "debug",
-        "z": "ec120fa2edfe719f",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": true,
-        "tostatus": false,
-        "complete": "options",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1250,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "523cc9ae65ba584b",
-        "type": "debug",
-        "z": "ec120fa2edfe719f",
-        "name": "debug 4",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1660,
-        "y": 400,
-        "wires": []
-    },
-    {
         "id": "aa820c7df09b9209",
         "type": "delay",
         "z": "ec120fa2edfe719f",
@@ -403,36 +339,163 @@
         ]
     },
     {
-        "id": "35a8658622437fe0",
+        "id": "a8a0b64da63c967d",
+        "type": "inject",
+        "z": "ec120fa2edfe719f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 630,
+        "y": 140,
+        "wires": [
+            [
+                "834d8fe49592836b"
+            ]
+        ]
+    },
+    {
+        "id": "07fd91e02ff60351",
+        "type": "join",
+        "z": "ec120fa2edfe719f",
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1450,
+        "y": 520,
+        "wires": [
+            [
+                "4a6a62c27ff31902"
+            ]
+        ]
+    },
+    {
+        "id": "11543a6680373876",
         "type": "function",
         "z": "ec120fa2edfe719f",
-        "name": "function 4",
-        "func": "let temp = msg.payload\nmsg.payload=[]\n\nmsg.payload[\"id\"]=temp\nreturn msg;",
+        "name": "function 7",
+        "func": "msg.topic = \"koto\"\nmsg.parts = {\n    id: 1, \n    index: 0, \n    count: 2      \n};\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1340,
+        "x": 1260,
         "y": 380,
         "wires": [
             [
-                "7d1b16272defda09"
+                "07fd91e02ff60351"
             ]
         ]
     },
     {
-        "id": "7d1b16272defda09",
-        "type": "merge",
+        "id": "4c32ae0ec9890fc3",
+        "type": "MSSQL",
         "z": "ec120fa2edfe719f",
+        "mssqlCN": "4a627f09ccdae4bf",
         "name": "",
-        "timeout": "4",
-        "x": 1490,
-        "y": 440,
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "",
+        "modeOpt": "",
+        "modeOptType": "query",
+        "queryOpt": "query",
+        "queryOptType": "msg",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "parseMustache": false,
+        "params": [
+            {
+                "output": false,
+                "name": "param1",
+                "type": "int",
+                "valueType": "num",
+                "value": "0",
+                "options": {
+                    "nullable": true,
+                    "primary": false,
+                    "identity": false,
+                    "readOnly": false
+                }
+            }
+        ],
+        "x": 2020,
+        "y": 560,
         "wires": [
             [
-                "523cc9ae65ba584b"
+                "bac9d0258aa4c75b"
+            ]
+        ]
+    },
+    {
+        "id": "4a6a62c27ff31902",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 8",
+        "func": "msg.payload[0] = Number(msg.payload[0]); // Cast to a number (long)\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1640,
+        "y": 560,
+        "wires": [
+            [
+                "9b87dccdff0993c0",
+                "5f54173448a45f8f"
+            ]
+        ]
+    },
+    {
+        "id": "5f54173448a45f8f",
+        "type": "function",
+        "z": "ec120fa2edfe719f",
+        "name": "function 9",
+        "func": "let query = `\nINSERT INTO tbl_r_firewall_login (fk_m_firewall, fw_ip_address, fw_username, fw_password, fw_expert_password) \nVALUES (${msg.payload[0]}, '${msg.payload[1].ip_address}', '${msg.payload[1].names}', '${msg.payload[1].password}', '${msg.payload[1].expert_password}');\n`;\nmsg.query = query;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1820,
+        "y": 560,
+        "wires": [
+            [
+                "4c32ae0ec9890fc3"
             ]
         ]
     },
